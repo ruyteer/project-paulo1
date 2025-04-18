@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Voa Brasil - Finalizar Cadastro</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Rawline", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+      }
+
+      body {
+        background-color: #f8f9fa;
+        min-height: 100vh;
+        max-width: 100%;
+        overflow-x: hidden;
+        position: relative;
+      }
+
+      .header-image {
+        width: 100%;
+        background: white;
+      }
+
+      .header-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .header-content {
+        position: absolute;
+        top: 8px;
+        right: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        z-index: 10;
+      }
+
+      .header-button {
+        background: #1351b4;
+        color: white;
+        padding: 6px 16px 6px 36px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        position: relative;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 460px;
+        margin: 16px auto;
+        background: white;
+        padding: 24px 16px;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .page-title {
+        font-size: 32px;
+        color: #1b1b1b;
+        margin-bottom: 16px;
+        font-weight: 500;
+      }
+
+      .page-subtitle {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 32px;
+        line-height: 1.5;
+      }
+
+      .timer-box {
+        background: #fff9e6;
+        border-radius: 8px;
+        padding: 24px;
+        margin: 32px 0;
+      }
+
+      .timer {
+        background: #f7c000;
+        color: white;
+        font-size: 32px;
+        font-weight: bold;
+        padding: 8px 24px;
+        border-radius: 24px;
+        display: inline-block;
+        margin-bottom: 16px;
+      }
+
+      .timer-text {
+        color: #996d00;
+        font-size: 16px;
+        line-height: 1.5;
+        margin-bottom: 8px;
+      }
+
+      .warning-box {
+        background: #fff5f5;
+        border-radius: 8px;
+        padding: 24px;
+        margin: 24px 0;
+        text-align: left;
+      }
+
+      .warning-title {
+        color: #b40c02;
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .warning-title::before {
+        content: "!";
+        width: 24px;
+        height: 24px;
+        background: #b40c02;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+
+      .warning-text {
+        color: #b40c02;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+
+      .confirm-button {
+        width: 100%;
+        padding: 16px;
+        background: #168821;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        margin-top: 24px;
+      }
+
+      .confirm-button:hover {
+        background: #146c1b;
+      }
+
+      .footer-image {
+        width: 100%;
+        margin-top: 40px;
+      }
+
+      .footer-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header-image">
+      <img src="images/head-pag3-2.0.jpg" alt="Header" />
+      <div class="header-content">
+        <a href="#" class="header-button"> </a>
+      </div>
+    </div>
+
+    <div class="container">
+      <h1 class="page-title">Finalizar Cadastro</h1>
+      <p class="page-subtitle">
+        Voa Brasil - O primeiro programa de inclusão social da aviação
+        Brasileira
+      </p>
+
+      <div class="timer-box">
+        <div class="timer">09:45</div>
+        <p class="timer-text">
+          Atenção: Sua vaga no programa está reservada temporariamente
+        </p>
+        <p class="timer-text">
+          Complete o cadastro antes que o tempo expire ou sua vaga será
+          disponibilizada para outro cidadão
+        </p>
+      </div>
+
+      <div class="warning-box">
+        <h3 class="warning-title">Importante</h3>
+        <p class="warning-text">
+          O não cadastramento resultará na perda permanente do direito ao
+          programa e sua vaga será imediatamente liberada para outro candidato
+          na fila de espera
+        </p>
+      </div>
+
+      <button class="confirm-button">Confirmar Cadastro</button>
+    </div>
+
+    <div class="footer-image">
+      <img src="images/rodape3.jpg" alt="Rodapé" />
+    </div>
+
+    <script>
+      function startTimer(duration, display) {
+        let timer = duration,
+          minutes,
+          seconds;
+        const interval = setInterval(function () {
+          minutes = parseInt(timer / 60, 10);
+          seconds = parseInt(timer % 60, 10);
+          minutes = minutes < 10 ? "0" + minutes : minutes;
+          seconds = seconds < 10 ? "0" + seconds : seconds;
+          display.textContent = minutes + ":" + seconds;
+          if (--timer < 0) {
+            clearInterval(interval);
+          }
+        }, 1000);
+      }
+
+      window.onload = function () {
+        const display = document.querySelector(".timer");
+        startTimer(9 * 60 + 45, display);
+        document
+          .querySelector(".confirm-button")
+          .addEventListener("click", () => {
+            window.location.href = "../../index.html" + window.location.search;
+          });
+      };
+    </script>
+  </body>
+</html>
