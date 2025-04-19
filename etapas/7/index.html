@@ -238,8 +238,8 @@
 
       .header-content {
         position: absolute;
-        top: 8px;
-        right: 16px;
+        top: 10px;
+        right: 30px;
         display: flex;
         align-items: center;
         gap: 12px;
@@ -252,11 +252,10 @@
         padding: 6px 16px 6px 36px;
         border-radius: 20px;
         text-decoration: none;
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 500;
         position: relative;
       }
-
       .header-button::before {
         content: "";
         position: absolute;
@@ -402,7 +401,7 @@
     <div class="header-image">
       <img src="images/head-pag3-2.0.jpg" alt="Header" />
       <div class="header-content">
-        <a href="#" class="header-button">CLIENTE</a>
+        <a href="#" class="header-button" id="user-name-button">CLIENTE</a>
       </div>
     </div>
 
@@ -481,6 +480,18 @@
       const avancarBtn = document.getElementById("avancarBtn");
       let currentSlide = 0;
       const totalSlides = slides.length;
+
+      const userNameButton = document.getElementById("user-name-button");
+
+      // Atualizar o nome do usuário no botão do header
+      try {
+        const dadosUsuario = JSON.parse(localStorage.getItem("dadosCPF")) || {};
+        if (dadosUsuario.NOME) {
+          userNameButton.textContent = dadosUsuario.NOME.split(" ")[0];
+        }
+      } catch (error) {
+        log("Erro ao recuperar nome do usuário do localStorage", error);
+      }
 
       function showSlide(index) {
         slides.forEach((slide) => {

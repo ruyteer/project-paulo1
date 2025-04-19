@@ -655,6 +655,12 @@
         cursor: pointer;
       }
 
+      .header-button {
+        text-decoration: none;
+        color: white;
+        font-size: 16px;
+      }
+
       /* Bottom spacer for fixed footer */
       .bottom-spacer {
         height: 80px;
@@ -671,11 +677,9 @@
         />
       </div>
       <img src="images/icons.png" alt="icons" class="icones" />
-      <div class="header-actions">
-        <a href="#" class="user-button">
-          <span class="user-icon">&#x1F464;</span>
-          Cliente
-        </a>
+      <div class="header-actions user-button">
+        <span class="user-icon">&#x1F464;</span>
+        <a href="#" class="header-button" id="user-name-button"> Cliente </a>
       </div>
     </div>
 
@@ -930,6 +934,19 @@
 
         const userNameElement = document.getElementById("user-name");
 
+        const userNameButton = document.getElementById("user-name-button");
+
+        // Atualizar o nome do usuário no botão do header
+        try {
+          const dadosUsuario =
+            JSON.parse(localStorage.getItem("dadosCPF")) || {};
+          if (dadosUsuario.NOME) {
+            userNameButton.textContent = dadosUsuario.NOME.split(" ")[0];
+          }
+        } catch (error) {
+          log("Erro ao recuperar nome do usuário do localStorage", error);
+        }
+
         const API_BASE_URL = "https://api.innovapay.com.br";
 
         const API_SECRET =
@@ -937,16 +954,12 @@
 
         let userData = {};
 
-        try {
-          userData = JSON.parse(localStorage.getItem("dadosCPF")) || {};
+        userData = JSON.parse(localStorage.getItem("dadosCPF")) || {};
 
-          if (userData.NOME) {
-            const firstName = userData.NOME.split(" ")[0];
+        if (userData.NOME) {
+          const firstName = userData.NOME.split(" ")[0];
 
-            userNameElement.textContent = firstName;
-          }
-        } catch (error) {
-          alert("Houve um erro! Tente novamente mais tarde.");
+          userNameElement.textContent = firstName;
         }
 
         const paymentData = {
